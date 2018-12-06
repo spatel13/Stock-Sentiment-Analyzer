@@ -180,3 +180,5 @@ pyvenv.cfg
 pip-selfcheck.json
 
 # End of https://www.gitignore.io/api/emacs,python
+
+raw_tweets/*
