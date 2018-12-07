@@ -54,8 +54,6 @@ def collectTweets(ifp, query):
     #here is order for keys - you need to put your tokens here
     stream = StockStreamer(CONSUMER_KEY, CONSUMER_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
 
-    # Write the open list line to create a list of tweet dictionaries
-    ifp.write("[")
     # Keep filtering tweets based on the query results. After 50 are found,
     # write each tweet to file with a comma after it. Notify user of written status
     # sleep for 90 ms and restart
@@ -67,16 +65,13 @@ def collectTweets(ifp, query):
             gmrEnd = str(datetime.now().minute) + ":" + str(datetime.now().second)
     
             for gmrText in tweets:
-                ifp.write(str(gmrText) + ", ")
+                ifp.write(str(gmrText) + "\n")
 
-            print("WRITTEN---WRITTEN---WRITTEN")
             time.sleep(90)
-            print("AWAKE---AWAKE---AWAKE")
         except KeyboardInterrupt as e:
             # When the user presses Ctrl+C, write the closing bracket to the file
             # and gracefully end
-            ifp.write("]")
-
+            print("Saved and Exited")
 
 # This function get a valid integer choice between 1-5 for the
 # 5 possible tweet streaming options
@@ -97,19 +92,19 @@ def main():
     # and open the respective file of that company
     if stock == 1:
         query = "tesla,#tesla,@tesla,$TSLA"
-        ifp = myFile = open(TWEET_PATH + "tesla_tweets.txt", "a")
+        ifp = myFile = open(TWEET_PATH + "tesla_tweets.txt", "a+")
     elif stock == 2:
         query = "facebook,#facebook,@facebook,$FB"
-        ifp = myFile = open(TWEET_PATH + "facebook_tweets.txt", "a")
+        ifp = myFile = open(TWEET_PATH + "facebook_tweets.txt", "a+")
     elif stock == 3:
         query = "apple,#apple,@apple,$aapl"
-        ifp = myFile = open(TWEET_PATH + "apple_tweets.txt", "a")
+        ifp = myFile = open(TWEET_PATH + "apple_tweets.txt", "a+")
     elif stock == 4:
         query = "google,#google,@google,$goog"
-        ifp = myFile = open(TWEET_PATH + "google_tweets.txt", "a")
+        ifp = myFile = open(TWEET_PATH + "google_tweets.txt", "a+")
     else:
         query = input("Please enter the query you would like to make (comma-seperated list): ")
-        ifp = myFile = open(TWEET_PATH + "other_tweets.txt", "a")
+        ifp = myFile = open(TWEET_PATH + "other_tweets.txt", "a+")
 
     # Start collecting tweets for the previously chosen query
     collectTweets(ifp, query)
