@@ -3,6 +3,7 @@
 # spatel32@umbc.edu
 
 from datetime import datetime
+import keyboard
 import os
 import requests
 import time
@@ -33,12 +34,9 @@ class StockStreamer(TwythonStreamer):
         if data.get('lang') == 'en':
             # Add data to overall tweet list
             tweets.append(data)
-
-            # Print text out to console for confimation
-            print(data.get('text'))
-
+            
         # write to file when we've collected 50
-        if len(tweets) >= 50:
+        if len(tweets) >= 5:
             self.disconnect()
 
 
@@ -58,20 +56,25 @@ def collectTweets(ifp, query):
     # write each tweet to file with a comma after it. Notify user of written status
     # sleep for 90 ms and restart
     while True:
-        try:
-            gmrStart = str(datetime.now().minute) + ":" + str(datetime.now().second)
-            stream.statuses.filter(track=query)
-            print("RETURN---RETURN---RETURN------")
-            gmrEnd = str(datetime.now().minute) + ":" + str(datetime.now().second)
-    
-            for gmrText in tweets:
-                ifp.write(str(gmrText) + "\n")
+        global tweets
+        tweets = []
+        gmrStart = str(datetime.now().minute) + ":" + str(datetime.now().second)
+        stream.statuses.filter(track=query)
+        print("RETURN---RETURN---RETURN------")
+        gmrEnd = str(datetime.now().minute) + ":" + str(datetime.now().second)
+        
+        for gmrText in tweets:
+            # Print text out to console for confimation
+            print(gmrText.get('text'))
 
-            time.sleep(90)
-        except KeyboardInterrupt as e:
-            # When the user presses Ctrl+C, write the closing bracket to the file
-            # and gracefully end
-            print("Saved and Exited")
+            # Writing to the given text file
+            ifp.write(str(gmrText) + "\n")
+
+        
+        if keyboard.is_pressed('esc'):
+                break
+
+        time.sleep(90)
 
 # This function get a valid integer choice between 1-5 for the
 # 5 possible tweet streaming options

@@ -9,3 +9,6 @@ This project is written to help to see how public sentiment on Twitter about a c
 * See how the previous day/week affects the current day's stock performance
 
 ## Future TO-DO
+* Make the scraper threaded
+* Add end on keypress to tweetScraper.py
+
