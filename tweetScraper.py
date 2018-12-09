@@ -3,7 +3,6 @@
 # spatel32@umbc.edu
 
 from datetime import datetime
-import keyboard
 import os
 import requests
 import time
@@ -69,10 +68,6 @@ def collectTweets(ifp, query):
 
             # Writing to the given text file
             ifp.write(str(gmrText) + "\n")
-
-        
-        if keyboard.is_pressed('esc'):
-                break
 
         time.sleep(90)
 
