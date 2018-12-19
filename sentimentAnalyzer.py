@@ -6,6 +6,7 @@ import pickle
 from stanfordcorenlp import StanfordCoreNLP
 
 MINIFIED_TWEETS = "minified_tweets/"
+PICKLE_FOLDER = "pickles/"
 
 class StanfordNLP:
     def __init__(self, host='http://localhost', port=9000):
@@ -100,30 +101,67 @@ def dailySentiment(tweetsByDate):
         for tweet in tweetsByDate.get(key):
             overallSentiment += int(tweet['sentimentValue'])
 
-        print(key + ":: " + " Sentiment: " +str(overallSentiment/numOfTweets) + ", numOfTweets: " + str(numOfTweets))
+        print(key + ":: " + " Total Sentiment: " +str(overallSentiment) + " / numOfTweets: " + str(numOfTweets) + " = " + str(overallSentiment/numOfTweets))
+    print()
 
 def main():
     print("TESLA:")
-    teslaTweets = curateTweets(MINIFIED_TWEETS + "tesla.txt")
-    teslaTweets = analyzeSentiment(teslaTweets)
+    try:
+        inFile = open(PICKLE_FOLDER + "tesla", "rb")
+        teslaTweets = pickle.load(inFile)
+        inFile.close()
+    except Exception as e:
+        teslaTweets = curateTweets(MINIFIED_TWEETS + "tesla.txt")
+        teslaTweets = analyzeSentiment(teslaTweets)
+        outFile = open(PICKLE_FOLDER + "tesla", "wb")
+        pickle.dump(teslaTweets, outFile)
+        outFile.close()
+
     tweetsByDate = categorizeTweets(teslaTweets)
     dailySentiment(tweetsByDate)
 
     print("FACEBOOK:")
-    facebookTweets = curateTweets(MINIFIED_TWEETS + "facebook.txt")
-    facebookTweets = analyzeSentiment(facebookTweets)
+    try:
+        inFile = open(PICKLE_FOLDER + "facebook", "rb")
+        facebookTweets = pickle.load(inFile)
+        inFile.close()
+    except Exception as e:
+        facebookTweets = curateTweets(MINIFIED_TWEETS + "facebook.txt")
+        facebookTweets = analyzeSentiment(facebookTweets)
+        outFile = open(PICKLE_FOLDER + "facebook", "wb")
+        pickle.dump(facebookTweets, outFile)
+        outFile.close()
+
     tweetsByDate = categorizeTweets(facebookTweets)
     dailySentiment(tweetsByDate)
 
     print("APPLE:")
-    appleTweets = curateTweets(MINIFIED_TWEETS + "apple.txt")
-    appleTweets = analyzeSentiment(appleTweets)
+    try:
+        inFile = open(PICKLE_FOLDER + "apple", "rb")
+        appleTweets = pickle.load(inFile)
+        inFile.close()
+    except Exception as e:
+        appleTweets = curateTweets(MINIFIED_TWEETS + "apple.txt")
+        appleTweets = analyzeSentiment(appleTweets)
+        outFile = open(PICKLE_FOLDER + "apple", "wb")
+        pickle.dump(appleTweets, outFile)
+        outFile.close()
+
     tweetsByDate = categorizeTweets(appleTweets)
     dailySentiment(tweetsByDate)
 
     print("GOOGLE:")
-    googleTweets = curateTweets(MINIFIED_TWEETS + "google.txt")
-    googleTweets = analyzeSentiment(googleTweets)
+    try:
+        inFile = open(PICKLE_FOLDER + "google", "rb")
+        googleTweets = pickle.load(inFile)
+        inFile.close()
+    except Exception as e:
+        googleTweets = curateTweets(MINIFIED_TWEETS + "google.txt")
+        googleTweets = analyzeSentiment(googleTweets)
+        outFile = open(PICKLE_FOLDER + "google", "wb")
+        pickle.dump(googleTweets, outFile)
+        outFile.close()
+
     tweetsByDate = categorizeTweets(googleTweets)
     dailySentiment(tweetsByDate)
     
