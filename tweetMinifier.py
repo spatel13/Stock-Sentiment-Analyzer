@@ -22,41 +22,14 @@ def curateTweets(filename):
 
     return tweets
 
-def monthToNum(month):
-    if month == "Dec":
-        return 12
-    elif month == "Nov":
-        return 11
-    elif month == "Oct":
-        return 10
-    elif month == "Sep":
-        return 9
-    elif month == "Aug":
-        return 8
-    elif month == "Jul":
-        return 7
-    elif month == "Jun":
-        return 6
-    elif month == "May":
-        return 5
-    elif month == "Apr":
-        return 4
-    elif month == "Mar":
-        return 3
-    elif month == "Feb":
-        return 2
-    elif month == "Jan":
-        return 1
-
 def minify(data):
     tweets = []
     for line in data:
-        created = datetime.strptime(line['created_at'], "%a %b %d %H:%M:%S %z %Y")
         tweet = {
             'text': line['text'],
             'favorite_count': line['favorite_count'],
             'retweet_count': line['retweet_count'],
-            'created': created,
+            'created': line['created_at'],
         }
         tweets.append(tweet)
 
@@ -65,8 +38,8 @@ def minify(data):
 def writeFile(data, fileName):
     ofp = open(fileName, "w")
     for tweet in data:
-        ofp.write(str(tweet) + "\n")
-
+        json.dump(tweet, ofp)
+        ofp.write("\n")
     ofp.close()
 
 def main():
