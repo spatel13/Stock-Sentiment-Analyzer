@@ -116,7 +116,7 @@ def main():
     dailySentiment(tweetsByDate)
 
     print("APPLE:")
-    appleTweets = curateTweets(MINIFIED_TWEETS + "applpe.txt")
+    appleTweets = curateTweets(MINIFIED_TWEETS + "apple.txt")
     appleTweets = analyzeSentiment(appleTweets)
     tweetsByDate = categorizeTweets(appleTweets)
     dailySentiment(tweetsByDate)
