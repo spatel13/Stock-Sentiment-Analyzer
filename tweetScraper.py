@@ -6,12 +6,12 @@ from datetime import datetime
 import os
 import requests
 import time
-# from TwitterAPI import TwitterAPI
 from twython import TwythonStreamer
 
 TWEET_PATH = "raw_tweets/"
 
 # Try to get the require API keys from the environment
+# and if it fails, printe error and exit
 try:
     CONSUMER_KEY = os.environ.get("TWIT_API_KEY")
     CONSUMER_SECRET = os.environ.get("TWIT_API_SECRET")
@@ -19,6 +19,7 @@ try:
     OAUTH_TOKEN_SECRET = os.environ.get("TWIT_ACCESS_SECRET")
 except Exception as e:
     print("No_TwitterKeys", e)
+    sys.exit(1)
 
 tweets = []
     
@@ -51,9 +52,9 @@ def collectTweets(ifp, query):
     #here is order for keys - you need to put your tokens here
     stream = StockStreamer(CONSUMER_KEY, CONSUMER_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
 
-    # Keep filtering tweets based on the query results. After 50 are found,
-    # write each tweet to file with a comma after it. Notify user of written status
-    # sleep for 90 ms and restart
+    # Keep filtering tweets based on the query parameter. After 5 are found,
+    # write each tweet to file with \n. Notify user of written status
+    # sleep for 90 seconds and restart
     while True:
         global tweets
         tweets = []

@@ -10,6 +10,10 @@ import json
 RAW_TWEETS = "raw_tweets/"
 MINIFIED_TWEETS = "minified_tweets/"
 
+# This fuction loads the tweets in from the text files
+# and evaluates them in to python dictionary objects
+# If a evaluation fails then it passes over that tweet
+# TODO: evaluate based on JSON potentially
 def curateTweets(filename):
     tweets = []
     with open(filename, "r") as ifp:
@@ -22,6 +26,9 @@ def curateTweets(filename):
 
     return tweets
 
+# Pulls the required data from each tweet into
+# a minified version dictionary and appends
+# that to a list that will be written to a file
 def minify(data):
     tweets = []
     for line in data:
@@ -35,6 +42,8 @@ def minify(data):
 
     return tweets
 
+# Writes the minified tweets to a file
+# as a json data followed by a \n
 def writeFile(data, fileName):
     ofp = open(fileName, "w")
     for tweet in data:
