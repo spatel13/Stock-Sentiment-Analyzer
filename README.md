@@ -11,4 +11,5 @@ This project is written to help to see how public sentiment on Twitter about a c
 * Add end on keypress to tweetScraper.py
 * Make a realtime web based scraper
 * Add a MongoDB instead of using a file
+* Dockerize this code base and StanfordCoreNLP
 
