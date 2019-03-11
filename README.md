@@ -1,15 +1,7 @@
 # Stock Sentiment Analyzer
+## **THIS BRANCH HOSTS THE ORIGINAL CODE THAT WAS SUBMITTED FOR THE ASSIGNMENT**
+## [Master](https://github.com/spatel13/Stock-Sentiment-Analyzer/tree/master) now contains the updates and tweaks I am making of my own curiosity
 
 This project is written to help to see how public sentiment on Twitter about a company correlate with the performance of that companies' stock.
 
-## TO-DO
-* Connect up to Robinhood or Yahoo Finance API for Stock data
-* See how the previous day/week affects the current day's stock performance
-
-## Future TO-DO
-* Make the scraper threaded
-* Add end on keypress to tweetScraper.py
-* Make a realtime web based scraper
-* Add a MongoDB instead of using a file
-* Dockerize this code base and StanfordCoreNLP
 
