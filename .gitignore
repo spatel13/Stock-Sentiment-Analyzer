@@ -181,5 +181,4 @@ pip-selfcheck.json
 
 # End of https://www.gitignore.io/api/emacs,python
 
-reOrganizer.py
-pickles/*
+mongo_db/
