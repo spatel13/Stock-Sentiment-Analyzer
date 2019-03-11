@@ -1,12 +1,14 @@
 import ast
 from datetime import datetime
 import json
-import logging
-import pickle
+from pymongo import MongoClient
 from stanfordcorenlp import StanfordCoreNLP
 
-MINIFIED_TWEETS = "minified_tweets/"
-PICKLE_FOLDER = "pickles/"
+# MINIFIED_TWEETS = "minified_tweets/"
+# PICKLE_FOLDER = "pickles/"
+
+client = MongoClient('localhost', 27017)
+db = client.tesla
 
 # This was gotten from the Stanford CoreNLP
 # wiki pages and I am only vaguely sure what it does.
@@ -126,64 +128,70 @@ def dailySentiment(tweetsByDate):
     print()
 
 def main():
-    print("TESLA:")
-    try:
-        inFile = open(PICKLE_FOLDER + "tesla", "rb")
-        teslaTweets = pickle.load(inFile)
-        inFile.close()
-    except Exception as e:
-        teslaTweets = curateTweets(MINIFIED_TWEETS + "tesla.txt")
-        teslaTweets = analyzeSentiment(teslaTweets)
-        outFile = open(PICKLE_FOLDER + "tesla", "wb")
-        pickle.dump(teslaTweets, outFile)
-        outFile.close()
-
-    tweetsByDate = categorizeTweets(teslaTweets)
+    tweets = db.minified_tweets
+    tweets = analyzeSentiment(tweets)
+    tweetsByDate = categorizeTweets(tweets)
     dailySentiment(tweetsByDate)
+    
+    
+    # print("TESLA:")
+    # try:
+    #     inFile = open(PICKLE_FOLDER + "tesla", "rb")
+    #     teslaTweets = pickle.load(inFile)
+    #     inFile.close()
+    # except Exception as e:
+    #     teslaTweets = curateTweets(MINIFIED_TWEETS + "tesla.txt")
+    #     teslaTweets = analyzeSentiment(teslaTweets)
+    #     outFile = open(PICKLE_FOLDER + "tesla", "wb")
+    #     pickle.dump(teslaTweets, outFile)
+    #     outFile.close()
 
-    print("FACEBOOK:")
-    try:
-        inFile = open(PICKLE_FOLDER + "facebook", "rb")
-        facebookTweets = pickle.load(inFile)
-        inFile.close()
-    except Exception as e:
-        facebookTweets = curateTweets(MINIFIED_TWEETS + "facebook.txt")
-        facebookTweets = analyzeSentiment(facebookTweets)
-        outFile = open(PICKLE_FOLDER + "facebook", "wb")
-        pickle.dump(facebookTweets, outFile)
-        outFile.close()
+    # tweetsByDate = categorizeTweets(teslaTweets)
+    # dailySentiment(tweetsByDate)
 
-    tweetsByDate = categorizeTweets(facebookTweets)
-    dailySentiment(tweetsByDate)
+    # print("FACEBOOK:")
+    # try:
+    #     inFile = open(PICKLE_FOLDER + "facebook", "rb")
+    #     facebookTweets = pickle.load(inFile)
+    #     inFile.close()
+    # except Exception as e:
+    #     facebookTweets = curateTweets(MINIFIED_TWEETS + "facebook.txt")
+    #     facebookTweets = analyzeSentiment(facebookTweets)
+    #     outFile = open(PICKLE_FOLDER + "facebook", "wb")
+    #     pickle.dump(facebookTweets, outFile)
+    #     outFile.close()
 
-    print("APPLE:")
-    try:
-        inFile = open(PICKLE_FOLDER + "apple", "rb")
-        appleTweets = pickle.load(inFile)
-        inFile.close()
-    except Exception as e:
-        appleTweets = curateTweets(MINIFIED_TWEETS + "apple.txt")
-        appleTweets = analyzeSentiment(appleTweets)
-        outFile = open(PICKLE_FOLDER + "apple", "wb")
-        pickle.dump(appleTweets, outFile)
-        outFile.close()
+    # tweetsByDate = categorizeTweets(facebookTweets)
+    # dailySentiment(tweetsByDate)
 
-    tweetsByDate = categorizeTweets(appleTweets)
-    dailySentiment(tweetsByDate)
+    # print("APPLE:")
+    # try:
+    #     inFile = open(PICKLE_FOLDER + "apple", "rb")
+    #     appleTweets = pickle.load(inFile)
+    #     inFile.close()
+    # except Exception as e:
+    #     appleTweets = curateTweets(MINIFIED_TWEETS + "apple.txt")
+    #     appleTweets = analyzeSentiment(appleTweets)
+    #     outFile = open(PICKLE_FOLDER + "apple", "wb")
+    #     pickle.dump(appleTweets, outFile)
+    #     outFile.close()
 
-    print("GOOGLE:")
-    try:
-        inFile = open(PICKLE_FOLDER + "google", "rb")
-        googleTweets = pickle.load(inFile)
-        inFile.close()
-    except Exception as e:
-        googleTweets = curateTweets(MINIFIED_TWEETS + "google.txt")
-        googleTweets = analyzeSentiment(googleTweets)
-        outFile = open(PICKLE_FOLDER + "google", "wb")
-        pickle.dump(googleTweets, outFile)
-        outFile.close()
+    # tweetsByDate = categorizeTweets(appleTweets)
+    # dailySentiment(tweetsByDate)
 
-    tweetsByDate = categorizeTweets(googleTweets)
-    dailySentiment(tweetsByDate)
+    # print("GOOGLE:")
+    # try:
+    #     inFile = open(PICKLE_FOLDER + "google", "rb")
+    #     googleTweets = pickle.load(inFile)
+    #     inFile.close()
+    # except Exception as e:
+    #     googleTweets = curateTweets(MINIFIED_TWEETS + "google.txt")
+    #     googleTweets = analyzeSentiment(googleTweets)
+    #     outFile = open(PICKLE_FOLDER + "google", "wb")
+    #     pickle.dump(googleTweets, outFile)
+    #     outFile.close()
+
+    # tweetsByDate = categorizeTweets(googleTweets)
+    # dailySentiment(tweetsByDate)
     
 main()
