@@ -4,6 +4,7 @@
 
 import os
 from pymongo import MongoClient
+import time
 from twython import TwythonStreamer
 
 
@@ -19,7 +20,9 @@ except Exception as e:
     sys.exit(1)
 
 client = MongoClient('localhost', 27017)
-tweets_db = client['tweets'].raw_tweets
+tweets_db = client['tweets'].tweets
+
+tweets = []
 
 class StockStreamer(TwythonStreamer):
     def __init__(self, app_key, app_secret, oauth_token, oauth_token_secret, **kwargs):
@@ -28,25 +31,32 @@ class StockStreamer(TwythonStreamer):
         self.raw_tweets = self.db.raw_tweets
 
     def _request(self, url, method='GET', params=None):
-        self.queries = params['track']
+        self.company = params['track'].split(',')[0]
+        self.tweetCounter = 0
         super()._request(url, method, params)
         
     def on_success(self, data):
         """what do we do when twitter sends us data?
         here data will be a Python object representing a tweet"""
 
+        minified_tweet = {}
+        
         # only want to collect English-language tweets
         if data.get('lang') == 'en':
-            # Find which query caused the tweet to be found
-            # and appropriately tag the tweet with it
-            for query in self.queries:
-                trackers = query.split(",")
-                for track in trackers:
-                    if track in data.get("text"):
-                        data['track'] = trackers[0]
-                        tweets_db.insert_one(data)
+            
+            minified_tweet['text'] = data.get('text')
+            minified_tweet['favorite_count'] = data.get('favorie_count')
+            minified_tweet['retweet_count'] = data.get('retweet_count')
+            minified_tweet['created'] = data.get('created_at')
+            minified_tweet['track'] = self.company
 
-                        print(trackers[0].upper() + ":  " + data.get("text"))
+            tweets_db.insert_one(minified_tweet)
+
+            print(self.company.upper() + ":  " + data.get("text"))
+            self.tweetCounter += 1
+            
+            if self.tweetCounter >= 10:
+                self.disconnect()
                         
 
     def on_error(self, status_code, data):
@@ -58,5 +68,8 @@ if __name__ == '__main__':
     queries = ["tesla,#tesla,@tesla,$TSLA", "facebook,#facebook,@facebook,$FB", "apple,#apple,@apple,$aapl", "google,#google,@google,$goog"]
 
     stream = StockStreamer(CONSUMER_KEY, CONSUMER_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
-    stream.statuses.filter(track=queries)
 
+    while True:
+        for query in queries:
+            stream.statuses.filter(track=query)
+            time.sleep(30)
