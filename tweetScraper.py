@@ -4,9 +4,9 @@
 
 import os
 from pymongo import MongoClient
+from sentimentAnalyzer import analyzeSentiment
 import time
 from twython import TwythonStreamer
-
 
 # Tries to get the required API keys from the environment
 # and if it fails, prints an error and exits
@@ -43,12 +43,16 @@ class StockStreamer(TwythonStreamer):
         
         # only want to collect English-language tweets
         if data.get('lang') == 'en':
+
+            sentimentValue, sentiment = analyzeSentiment(data.get('text'))
             
             minified_tweet['text'] = data.get('text')
             minified_tweet['favorite_count'] = data.get('favorie_count')
             minified_tweet['retweet_count'] = data.get('retweet_count')
             minified_tweet['created'] = data.get('created_at')
             minified_tweet['track'] = self.company
+            minified_tweet['sentimentValue'] = sentimentValue
+            minified_tweet['sentiment'] = sentiment
 
             tweets_db.insert_one(minified_tweet)
 
@@ -63,7 +67,7 @@ class StockStreamer(TwythonStreamer):
         print(status_code, data)
         print("BIG ERROR==========================")
         self.disconnect()
-        
+
 if __name__ == '__main__':
     queries = ["tesla,#tesla,@tesla,$TSLA", "facebook,#facebook,@facebook,$FB", "apple,#apple,@apple,$aapl", "google,#google,@google,$goog"]
 
