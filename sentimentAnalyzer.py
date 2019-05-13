@@ -1,10 +1,8 @@
-import ast
-from datetime import datetime
 import json
-from pymongo import MongoClient
+import math
 from stanfordcorenlp import StanfordCoreNLP
 
-client = MongoClient('localhost', 27017)
+SENTIMENT = ["Really Negative", "Negative", "Neutral", "Positive", "Really Positive"]
 
 # This was gotten from the Stanford CoreNLP
 # wiki pages and I am only vaguely sure what it does.
@@ -49,6 +47,8 @@ class StanfordNLP:
             }
         return tokens
 
+sNLP = StanfordNLP()
+
 # This function takes in a string and removes anything greater than
 # the 128 basic ASCII table i.e removes unique character and emojis
 # that would cause CoreNLP to crash and not return a sentiment value
@@ -59,94 +59,27 @@ def removeUnicode(text):
 			asciiText = asciiText + char
 	return asciiText
 
-# this function takes in a date string and
-# converts it into a datetime object based on
-# a specific parsing breakdown
-def textToDateTime(date):
-    return datetime.strptime(date, "%a %b %d %H:%M:%S %z %Y")
-
-# This fuction loads the tweets in from the text files
-# and evaluates them in to python dictionary objects
-# If a evaluation fails then it passes over that tweet
-# TODO: evaluate based on JSON potentially
-def curateTweets(filename):
-    tweets = []
-    with open(filename, "r") as ifp:
-        data = ifp.readlines()
-        for i in range(len(data)):
-            try:
-                tweets.append(ast.literal_eval(data[i].strip()))
-            except Exception as e:
-                pass
-
-    return tweets
-
 # This function takes in a list of tweets and
 # for every tweet, run the text through the the sentiment analyzer
 # Finally, add the value to the tweet dictionary
-def analyzeSentiment(tweets):
-    sNLP = StanfordNLP(host='http://159.203.87.119')
-    for i in range(len(tweets)):
-        annotatedText = sNLP.annotate(removeUnicode(tweets[i]['text']))
+def analyzeSentiment(text):
+    text = removeUnicode(text)
+    annotatedText = sNLP.annotate(text).get('sentences')
+
+    val = 0
+    for sentence in annotatedText:
+        val += int(sentence.get('sentimentValue'))
+
+    avgVal = val / len(annotatedText)        
+
+    decimal = avgVal - int(avgVal)
+    avgValInt = math.floor(avgVal) if (decimal < 0.5) else math.ceil(avgVal)
+
+    return avgVal, SENTIMENT[avgValInt]
+
+# def main():
+#     analyzeSentiment(removeUnicode("$APPL would you guys have \"beat\" without the billions of dollars in buybacks to manipulate your EPS @tim_cook? Maybe that cash you're hoarding oversees should go to hiring, R&D, and new product creation instead of as a way to reduce your float. Then there may be actual innovation"))
+
+#     analyzeSentiment(removeUnicode("$aapl on the other side of #Antitrust law. I agree that 30% is quite a high cut to take, but undecided on not allowing 3rd party selling of apps is fully anti competitive? It indeed provides some security & quality control for users.."))
     
-        keys = list(annotatedText.keys())
-    
-        for sentence in annotatedText.get(keys[0]):
-            tweets[i]['sentiment'] = sentence['sentiment']
-            tweets[i]['sentimentValue'] = sentence['sentimentValue']
-
-    return tweets
-
-# This function takes in a list of tweets and
-# categorizes them by the date on which they were tweeted
-def categorizeTweets(tweets):
-    tweetsByDate = {}
-    for tweet in tweets:
-        created = textToDateTime(tweet['created'])
-        if tweetsByDate.get(created.strftime("%Y-%m-%d")) == None:
-            tweetsByDate[created.strftime("%Y-%m-%d")] = [tweet]
-        else:
-            tweetsByDate[created.strftime("%Y-%m-%d")].append(tweet)
-
-    return tweetsByDate
-
-# This function takes in the dictionary of tweets and
-# for each date calculates the average sentiment over
-# the entire days worth of collected tweets
-def dailySentiment(tweetsByDate):
-    for key in tweetsByDate.keys():
-        numOfTweets = len(tweetsByDate.get(key))
-        overallSentiment = 0
-        for tweet in tweetsByDate.get(key):
-            overallSentiment += int(tweet['sentimentValue'])
-
-        print(key + ":: " + " Total Sentiment: " +str(overallSentiment) + " / numOfTweets: " + str(numOfTweets) + " = " + str(overallSentiment/numOfTweets))
-    print()
-
-def main():
-    db = client.tesla
-    tweets = db.minified_tweets
-    tweets = analyzeSentiment(tweets)
-    tweetsByDate = categorizeTweets(tweets)
-    dailySentiment(tweetsByDate)
-
-
-    db = client.facebook
-    tweets = db.minified_tweets
-    tweets = analyzeSentiment(tweets)
-    tweetsByDate = categorizeTweets(tweets)
-    dailySentiment(tweetsByDate)
-
-    db = client.apple
-    tweets = db.minified_tweets
-    tweets = analyzeSentiment(tweets)
-    tweetsByDate = categorizeTweets(tweets)
-    dailySentiment(tweetsByDate)
-
-    db = client.google
-    tweets = db.minified_tweets
-    tweets = analyzeSentiment(tweets)
-    tweetsByDate = categorizeTweets(tweets)
-    dailySentiment(tweetsByDate)
-    
-main()
+# main()
